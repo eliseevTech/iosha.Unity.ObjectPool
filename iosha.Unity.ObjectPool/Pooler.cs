@@ -13,6 +13,29 @@ namespace iosha.Unity.ObjectPool
 
         public T Resolve<T>(T pullObject, object objectParams = null) where T : MonoBehaviour, IPoolEntity
         {
+            var entity = InternalResolve(pullObject);
+            entity.Initialize(objectParams);
+            return entity;
+        }
+
+        /// <summary>
+        /// PreResolve object to pool. 
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="pullObject"></param>
+        /// <param name="count"></param>
+        public void PreResolve<T>(T pullObject, int count) where T : MonoBehaviour, IPoolEntity
+        {
+            for (int i = 0; i < count; i++)
+            {
+                var entity = InternalResolve<T>(pullObject);
+                entity.gameObject.SetActive(false);
+            }
+        }
+
+
+        private T InternalResolve<T>(T pullObject) where T : MonoBehaviour, IPoolEntity
+        {
             IPoolEntity entity = null;
             List<IPoolEntity> pull = null;
 
@@ -36,13 +59,7 @@ namespace iosha.Unity.ObjectPool
                 pull.Add(entity);
             }
 
-            entity.Initialize(objectParams);
-
             return (T)entity;
         }
-
-        public 
-
-        
     }
 }
